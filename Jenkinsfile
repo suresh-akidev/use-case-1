@@ -1,0 +1,12 @@
+pipeline{
+    agent any
+    stages {
+        stage('Pull Docker Image') {
+            steps {
+                script {
+                  sh 'docker run -d nginx'
+                }
+            }
+        }
+    }
+}
