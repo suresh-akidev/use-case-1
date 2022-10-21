@@ -52,7 +52,7 @@ egress {
 }
 
 resource "aws_instance" "terra_ec2" {
-    count = 2
+    count = var.number_of_instances
     ami = "ami-01216e7612243e0ef"
     instance_type = "t2.micro"
     key_name = "ec2_key_pair"
@@ -65,24 +65,8 @@ resource "aws_instance" "terra_ec2" {
       volume_type = "gp2"
       delete_on_termination = true
     }
-    #user_data = file("install-docker.sh")
-    user_data = <<-EOF
-        #!/bin/bash
-        cd /home/ubuntu 
-        touch test.txt
-        #!/bin/bash
-        yum update 
-        yum -y install docker
-        service docker start
-        usermod -a -G docker ec2-user 
-        chkconfig docker on 
-        pip3 install docker-compose
-        sudo apt install unzip -y
-        sudo curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-        sudo unzip awscliv2.zip
-        sudo ./aws/install
-        reboot
-        EOF
+    user_data = file("install-pre-requisites.sh")
+
 
     iam_instance_profile = "EC2_Role_SSM"
     tags = {
@@ -91,45 +75,71 @@ resource "aws_instance" "terra_ec2" {
 
 }
 
-resource "aws_lb" "LoadBalancer" {
-    name = "terra-alb"
-    internal = false
-    load_balancer_type = "application"
-    subnets = [
-        "subnet-00d2838782fa3ecee",
-        "subnet-0ca78c43341642cf0"
-    ]
-    security_groups = [
-        "sg-06285411bf97c0de3"
-    ]
-    ip_address_type = "ipv4"
-
+resource "time_sleep" "wait_60_seconds" {
+  depends_on = [ aws_instance.terra_ec2 ]
+  create_duration = "60s"
 }
 
-resource "aws_lb_target_group" "targetGroup" {
-    health_check {
-        interval = 30
-        path = "/"
-        port = "traffic-port"
-        protocol = "HTTP"
-        timeout = 5
-        unhealthy_threshold = 2
-        healthy_threshold = 5
-        matcher = "200"
+resource "null_resource" "pull_docker" {
+  count = var.number_of_instances
+  depends_on = [time_sleep.wait_60_seconds]
+
+  connection {
+      type = "ssh"
+      host = "3.109.143.220"
+      user = "ec2-user"
+      password = ""
+      private_key = file("private_key/ec2_key_pair.pem")
+    }  
+
+    provisioner "remote-exec" {
+      inline = [
+         "aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 157673692367.dkr.ecr.us-east-1.amazonaws.com",
+         "docker push 157673692367.dkr.ecr.us-east-1.amazonaws.com/app-repo:latest",
+         "docker run -d 157673692367.dkr.ecr.us-east-1.amazonaws.com/app-repo:latest"
+      ]
     }
-    port = 80
-    protocol = "HTTP"
-    target_type = "instance"
-    vpc_id = "vpc-06f4255c5722106aa"
-    name = "terra-tg"
 }
 
-resource "aws_lb_target_group_attachment" "test" {
-  for_each = {
-    "instanceid01" = "0"
-    "instanceid02" = "1"
-  }
-  target_group_arn = aws_lb_target_group.targetGroup.arn
-  target_id        = aws_instance.terra_ec2[each.value].id
-  port             = 80
-}
+
+
+
+# resource "aws_lb" "LoadBalancer" {
+#     name = "terra-alb"
+#     internal = false
+#     load_balancer_type = "application"
+#     subnets = [
+#         "subnet-00d2838782fa3ecee",
+#         "subnet-0ca78c43341642cf0"
+#     ]
+#     security_groups = [
+#         "sg-06285411bf97c0de3"
+#     ]
+#     ip_address_type = "ipv4"
+
+# }
+
+# resource "aws_lb_target_group" "targetGroup" {
+#     health_check {
+#         interval = 30
+#         path = "/"
+#         port = "traffic-port"
+#         protocol = "HTTP"
+#         timeout = 5
+#         unhealthy_threshold = 2
+#         healthy_threshold = 5
+#         matcher = "200"
+#     }
+#     port = 80
+#     protocol = "HTTP"
+#     target_type = "instance"
+#     vpc_id = "vpc-06f4255c5722106aa"
+#     name = "terra-tg"
+# }
+
+# resource "aws_lb_target_group_attachment" "test" {
+#   count = var.number_of_instances
+#   target_group_arn = aws_lb_target_group.targetGroup.arn
+#   target_id        = aws_instance.terra_ec2[count.index].id
+#   port             = 80
+# }
