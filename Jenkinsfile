@@ -27,8 +27,8 @@ pipeline {
         stage ("terraform init") {
             steps {
                 dir('terraform_resources') {
-                    sh "pwd"
                     sh 'terraform init'
+                    sh "pwd"
                     sh 'ls'
                 }
                 
