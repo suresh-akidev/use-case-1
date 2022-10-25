@@ -26,11 +26,7 @@ pipeline {
 
         stage ("terraform init") {
             steps {
-                dir('terraform_resources') {
-                    sh 'terraform init'
-                    sh "pwd"
-                    sh 'ls'
-                }
+                sh ('cd terraform_resources; terraform init')
                 
             }
         }
