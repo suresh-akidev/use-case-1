@@ -25,9 +25,11 @@ pipeline {
         // }
 
         stage ("terraform init") {
-            dir('terraform_resources') {
-                    sh "terraform init"
-                }
+            steps {
+                dir('terraform_resources') {
+                        sh "terraform init"
+                    }
+            }
         }
         stage ("terraform validate") {
             steps {
