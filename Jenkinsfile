@@ -54,7 +54,9 @@ pipeline {
         stage ("terraform apply") {
             steps {
                 echo "Terraform action is --> apply"
-                sh ('terraform apply --auto-approve -var-file dev.tfvars' ) 
+                dir('terraform_resources') {
+                    sh "terraform apply -auto-approve -var-file dev.tfvars"
+                }
            }
         }
     }

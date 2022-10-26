@@ -12,6 +12,7 @@ resource "null_resource" "push_docker" {
 
 
 # resource "aws_security_group" "terra_sg" {
+#  depends_on = [null_resource.push_docker]
 #   name = "terra-sg"
 #   description = "terraform course security group"
 #   vpc_id = "vpc-06f4255c5722106aa"
@@ -31,6 +32,7 @@ resource "null_resource" "push_docker" {
 # }
 
 # resource "aws_instance" "terra_ec2" {
+#  depends_on = [null_resource.push_docker]
 #     count = var.number_of_instances
 #     ami = "ami-01216e7612243e0ef"
 #     instance_type = "t2.micro"
