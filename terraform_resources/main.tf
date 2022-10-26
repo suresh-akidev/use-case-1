@@ -46,7 +46,7 @@ resource "aws_instance" "terra_ec2" {
       volume_type = "gp2"
       delete_on_termination = true
     }
-    user_data = file("install-pre-requisites.sh")
+    user_data = file("scripts/install-pre-requisites.sh")
 
 
     iam_instance_profile = "EC2_Role_SSM"
