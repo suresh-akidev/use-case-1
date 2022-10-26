@@ -73,6 +73,8 @@ resource "null_resource" "pull_docker" {
 
     provisioner "remote-exec" {
       inline = [
+         "docker kill $(docker ps -qa)",
+         "docker image rm $(docker image ls -q) --force",
          "aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${var.ecr_repo_url}",
          "docker pull ${var.ecr_repo_url}/${var.ecr_repo_name}:${var.docker_image_tag}",
          "docker run -d -p 80:80 ${var.ecr_repo_url}/${var.ecr_repo_name}:${var.docker_image_tag}"

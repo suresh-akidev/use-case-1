@@ -1,4 +1,4 @@
-docker_image_tag = "thala-app-v4"
+docker_image_tag = "thala-app-v5"
 ecr_repo_url = "157673692367.dkr.ecr.us-east-1.amazonaws.com"
 ecr_repo_name = "app-repo"
 
