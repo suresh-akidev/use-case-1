@@ -1,4 +1,4 @@
-docker_image_tag = "thala-app-v2"
+docker_image_tag = "thala-app-v3"
 ecr_repo_url = "157673692367.dkr.ecr.us-east-1.amazonaws.com"
 ecr_repo_name = "app-repo"
 
@@ -19,7 +19,7 @@ ingress_rules = [ {
     from_port = 0
     to_port = 0
     cidr_blocks = [ "0.0.0.0/0" ]
-    description = "Outbound Terraform Security Group"
+    description = "Inbound Terraform Security Group"
     ipv6_cidr_blocks = []
     prefix_list_ids = []
     security_groups = []

@@ -6,10 +6,8 @@ resource "null_resource" "push_docker" {
 
     triggers = {
       image_tag = var.docker_image_tag
-    }
-    
+    }   
 }
-
 
 resource "aws_security_group" "terra_sg" {
  depends_on = [null_resource.push_docker]
