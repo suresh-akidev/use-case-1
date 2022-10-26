@@ -27,7 +27,7 @@ pipeline {
         stage ("terraform init") {
             steps {
                 dir('terraform_resources') {
-                        sh "terraform init"
+                        sh "terraform init -upgrade"
                     }
             }
         }
