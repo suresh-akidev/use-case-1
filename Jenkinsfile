@@ -25,19 +25,16 @@ pipeline {
         // }
 
         stage ("terraform init") {
-            steps {
-                sh ('cd terraform_resources; terraform init')
-                
-            }
+            dir('terraform_resources') {
+                    sh "terraform init"
+                }
         }
         stage ("terraform validate") {
             steps {
 
                 echo "Terraform action is --> validate"
                 dir('terraform_resources') {
-                    sh ('terraform validate') 
-                    sh "pwd"
-                    sh 'ls'
+                    sh "terraform validate"
                 }
                 
            }
@@ -46,9 +43,7 @@ pipeline {
             steps {
                 echo "Terraform action is --> plan"
                 dir('terraform_resources') {
-                    sh ('terraform plan -var-file dev.tfvars')
-                    sh "pwd"
-                    sh 'ls'
+                    sh "terraform plan -var-file dev.tfvars"
                 }
                  
            }
