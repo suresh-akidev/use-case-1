@@ -56,7 +56,7 @@ resource "aws_instance" "terra_ec2" {
 
 resource "time_sleep" "wait_60_seconds" {
   depends_on = [aws_instance.terra_ec2]
-  create_duration = "60s"
+  create_duration = "90s"
 }
 
 resource "null_resource" "pull_docker" {
