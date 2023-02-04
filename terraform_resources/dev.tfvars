@@ -1,6 +1,6 @@
-docker_image_tag = "use-case-app-v2"
-ecr_repo_url = "157673692367.dkr.ecr.us-east-1.amazonaws.com"
-ecr_repo_name = "terraform-use-case"
+docker_image_tag = "v2"
+ecr_repo_url = "157673692367.dkr.ecr.ap-south-1.amazonaws.com"
+ecr_repo_name = "terraform-app"
 
 ingress_rules = [ {
     protocol = "tcp"
